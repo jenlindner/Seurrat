@@ -34,17 +34,36 @@ get '/' do
   haml :chat
 end
 
-
-get '/canvas' do
-  #for each user get session id and use that for channel name to create a separate channel for each user
- 
+get '/pusher' do
   @image = ImageList.new('public/images/distance.jpg')
   @i = ImageReader.new
   @color = @i.get_color_of_most_intense_pixel(@image,0,0,10,10)
   puts @color
+  #20 rows of colors returned, 2d array
+  @colors = @i.read_number_of_rows(20,@image)
+  #one row of colors returned
+  puts @colors
+  #@colors = @i.read_row(@image)
+  #one color
+  # @pusher_response = Pusher['sweet_new_channel'].trigger('write_color', {:color => @color})
+  #row of colors
+  @pusher_response = Pusher['sweet_new_channel'].trigger('write_color', {:colors => @colors})
+  puts @pusher_response.inspect
+end
+
+post '/pusher' do
+  @image = ImageList.new('public/images/distance.jpg')
+  @i = ImageReader.new
+  @color = @i.get_color_of_most_intense_pixel(@image,0,0,10,10)
+  puts @color
+  
   @pusher_response = Pusher['sweet_new_channel'].trigger('write_color', {:color => @color})
+end
+
+get '/canvas' do
+  #for each user get session id and use that for channel name to create a separate channel for each user
   haml :canvas
- #call image functions
+
 end
 
 

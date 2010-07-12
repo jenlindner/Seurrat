@@ -1,87 +1,73 @@
+$(document).ready(function(){
+	var server = new Pusher('279b70cc663845e74c75', 'sweet_new_channel');
+	var original = document.getElementById('original');
+	var composed = document.getElementById('composed');
 
-var example = document.getElementById('example');
-var sophisticated = document.getElementById('sophisticated');
-
-	var ctx = example.getContext('2d');
-	var soph = sophisticated.getContext('2d');
-	/*
-  	ctx.fillStyle = "rgb(200,0,0)";  
-    ctx.fillRect(10, 10, 55, 50);  
-  
-    ctx.fillStyle = "rgba(0, 0, 200, 0.5)";  
-    ctx.fillRect(30, 30, 55, 50);	
-		
-		soph.strokeStyle = "rgb(200,0,0)";
-		soph.strokeRect( 100, 100, 500,300);
-		soph.fillRect(102,102,496,296);
-		soph.clearRect(106,106,486,286);
+	var org = original.getContext('2d');
+	var comp = composed.getContext('2d');
 	
-		soph.beginPath();
-		soph.moveTo(75,50);
-		soph.lineTo(200,75);
-		soph.lineTo(200,25);
-		soph.fill();
+	Seurrat.init(org, comp, server);
+	server.bind('write_color', function(data){
+//		console.log(data["colors"][0]);
+		Seurrat.setColor(data,comp);		
+	});
+ 	
+	$('#foo').click(function() {
+		$.get('/pusher', function(data) {
+			console.log("success");
+    });
+  }); 
+});
 
-		
-		ctx.beginPath();
-		ctx.arc(75,75,50,0,Math.PI*2,true);
-		ctx.moveTo(110,75);
-		ctx.arc(75,75,35,0,Math.PI,false);
-		ctx.moveTo(65,65);
-		ctx.arc(60,65,5,0,Math.PI*2,true);
-		ctx.moveTo(95,65);
-		ctx.arc(90,65,5,0,Math.PI*2, true);
-		ctx.stroke();
-	*/	
-		
-		function fillTenByTenSquare(el,x,y,color){
-			console.log(el,x,y,color);
-			el.fillStyle = color;
-			el.fillRect(x,y,x+10,y+10);
+var Seurrat = {
+	init: function(canvas1, canvas2, server){	
+		this.canvas_one = canvas1;
+		this.canvas_two = canvas2;
+		this.server = server
+	},
+	color: "rgb",	
+	fillSquare: function (el,x,y,color){
+	//	console.log(el,x,y,color);
+		el.fillStyle = color;
+		el.fillRect(x,y,x+10,y+10);
+		//trigger request for more color?
+	//	this.server.trigger()
+		},
+	setColor: function(color,el){
+		this.colors = color["colors"];
+		//write loop that fills square every ten pixels, getting new color
+		//each ten pixels
+			//this.colorRow(this.canvas_two,0)
+			this.colorAllRows();
+	},
+	colorRow: function (el, row){
+//		console.log(this.colors);
+		for (i = 0, j = 0; i < 291; i++){
+			if (i % 10 == 0){
+				//get color -- i corresponds to blocks of ten: each element in
+				//array is ten pixels worth of color
+				el.moveTo(i,row * 10);
+				//probably need to check value of i
+				//console.log("i = " +i)
+				j++
 			}
-			
-		// soph.beginPath();
-		//okay first: begin at the beginning and fill a ten by ten square. 
-		//move over to the right ten pixels and do it again. now write a loop to increment
-		//the x values up to a specific width. to 800.
-
-		function drawRow(row, color){
-			console.log("draw");
-		//	var color = "rgb(255,165,0)";
-			for (i = 0; i < 31; i++){
-				//console.log("hello");
-				if (i % 10 == 0){
-					soph.moveTo(i,row);
-					//pause here to slow function?
-					
-					//check for color here, to get correct rgb value.
-					
-			//		color = "rgb(205,205,0)";
-					fillTenByTenSquare(soph,i,row,color);
-				}
-			}
+		//	console.log("j = " +j)
+			this.fillSquare(el,i,row * 10,this.colors[row][j]);
 		}
-	
-//	problem is this is too slow, need to draw one row then stop, over and over again.	
-//besides, the idea is to see it moving slowly across the page.	
-//		for(j = 10; j < 591; j++){
-			// for(j = 10; j < 91; j++){
-			// 	console.log("hi");
-			// 	// if (j % 10 == 0){
-			// 	// 			console.log(j)
-			// 	// 			//soph.moveTo(0, j);
-			// 	// 		 //	drawRow(j);
-			// 	// 			}
-			// }
-	/*	
-		soph.moveTo(10,10);
-		fillTenByTenSquare(soph,10,10);
-		soph.moveTo(20,10);
-		fillTenByTenSquare(soph,20,10);
-		soph.moveTo(30,10);
-		fillTenByTenSquare(soph,30,10);
-		*/
-		
-		
-		
-		
+	},
+	colorAllRows: function(){
+		//you will have traverse data structure differently
+		//colors[i] is a row
+		for (idx = 0; idx < 20; idx++){
+			//console.log("idx is " +idx)
+			//if (idx % 10 == 0){
+		//		console.log("hey idx = " +idx)
+				this.colorRow(this.canvas_two, idx);
+		//	}
+		}
+	},
+	showColor: function(){
+		alert(this.color);
+	}
+};
+

@@ -2,19 +2,17 @@
 %html{html_attrs}
 %head
 	%title Seurrat
-	
-	%script{:type => 'text/javascript', :src => "http://js.pusherapp.com/1.4/pusher.min.js"}
 
 	%script{:type => 'text/javascript', :src => "http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"}
-
-
+	
+	%script{:type => 'text/javascript', :src => "http://js.pusherapp.com/1.4/pusher.min.js"}
+	%script{:type => 'text/javascript', :src => "/javascripts/seurrat.js"}
+	
 	%link{:href => "/stylesheets/chat.css", :media => "screen", :rel => "stylesheet", :type => "text/css"}
 
 %body
 
-	%p= @pusher_response
-	<p id='foo'>hello</p>
-	<canvas id="example" width="200" height="200">nope</canvas>
-	<canvas id="sophisticated" width="600" height="200">nope</canvas>	
-
-	%script{:type => 'text/javascript', :src => "/javascripts/simple_pusher_chat.js"}
+	<p id='foo'>draw</p>
+	
+	<canvas id="original">nope</canvas>
+	<canvas id="composed">nope</canvas>	
